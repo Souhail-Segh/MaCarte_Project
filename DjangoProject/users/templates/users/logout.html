@@ -1,0 +1,16 @@
+{% extends "blog/base.html"%}
+{% block content %}
+    <h2>Logout page</h2>
+    <div class="content-section">
+        <div class="border-top pt-3">
+            <form method="POST">{% csrf_token %}
+                <p>Are you sure to logout?</p>
+                <input type="submit" value="Logout">
+            </form>
+        </div> 
+        <small class="text-muted">
+            <a class="ml-2" href="{% url 'blog-home' %}">Go back to home page.</a>
+        </small> 
+        
+    </div>
+{% endblock content %} 
