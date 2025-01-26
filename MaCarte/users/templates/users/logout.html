@@ -1,0 +1,17 @@
+{% extends "gallery/base.html"%}
+{% block content %}
+    <h2>Logout page</h2>
+    <div class="content-section">
+        <div class="border-top pt-3">
+            <form method="POST">{% csrf_token %}
+                <p>Are you sure to logout?</p>
+                <input type="submit" class="btn btn-danger" value="Logout">
+            </form>    
+        </div> 
+        <small class="text-muted">
+            <a class="btn btn-dark my-3" href="{% url 'gallery-home' %}">Back Home</a>
+        </small> 
+        
+    </div>
+
+{% endblock content %} 

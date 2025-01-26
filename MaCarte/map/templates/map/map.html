@@ -1,0 +1,151 @@
+{% extends "gallery/base.html" %}
+{% block content %}
+    <!-- Add a container above the map -->
+    <div class="content-top">
+        <h1>Interactive Map</h1>
+        <p>Use the map below to add, view, and manage your markers.</p>
+    </div>
+
+    <!-- Map container -->
+    <div id="map" style="height: 600px; margin-top: 20px;"></div>
+
+    <script>
+        var map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+    
+        var markers = JSON.parse('{{ markers|escapejs }}');
+        var markerObjects = {}; // Store marker objects by their IDs
+    
+        markers.forEach(marker => {
+            const markerObj = L.marker([marker.latitude, marker.longitude]).addTo(map);
+            let popupContent = '';
+
+            if (marker.photo) {
+                popupContent += `<img src="${marker.photo}" alt="Last uploaded photo" style="width:100%; max-height:150px; object-fit:cover; margin-bottom:10px;"><br>`;
+            }
+            popupContent += `<b>${marker.name || 'Unnamed Location'}</b><br>`;
+            popupContent += `<a href="{% url 'add' %}?marker_id=${marker.id}" class="btn btn-info btn-same-size mt-2">Add Picture</a><br>`;
+            popupContent += `<button onclick="deleteMarker(${marker.id})" class="btn btn-danger btn-same-size mt-2">Delete Marker</button>`;
+
+            markerObj.bindPopup(popupContent);
+            markerObjects[marker.id] = markerObj;
+
+            markerObj.on('click', function () {
+                markerObj.openPopup();
+            });
+        });
+
+        map.on('click', function (e) {
+    var latitude = e.latlng.lat;
+    var longitude = e.latlng.lng;
+    var name = prompt("Enter marker name (optional):");
+
+    if (!name) {
+        alert("Marker name is required.");
+        return; // Exit if no name is provided
+    }
+
+    // Make a POST request to add the marker
+    $.post('/add_marker/', {
+        name: name,
+        latitude: latitude,
+        longitude: longitude,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    }).done(function (response) {
+        const markerObj = L.marker([latitude, longitude]).addTo(map);
+
+        // Generate the HTML for the popup (replicate the logic from markers.forEach)
+        let popupContent = '';
+
+        // Display last uploaded photo (if available)
+        if (response.photo) {
+            popupContent += `<img src="${response.photo}" alt="Last uploaded photo" style="width:100%; max-height:150px; object-fit:cover; margin-bottom:10px;"><br>`;
+        }
+
+        // Display marker name or placeholder
+        popupContent += `<b>${response.name || 'Unnamed Location'}</b><br>`;
+
+        // Add a button to redirect to the Add Picture page, passing the marker ID
+        popupContent += `<a href="{% url 'add' %}?marker_id=${response.marker_id}" class="btn btn-info btn-same-size mt-2">Add Picture</a><br>`;
+
+        // Add a Delete Marker button
+        popupContent += `<button onclick="deleteMarker(${response.marker_id})" class="btn btn-danger btn-same-size mt-2">Delete Marker</button>`;
+
+        // Bind the popup content to the marker
+        markerObj.bindPopup(popupContent);
+
+        // Store marker object with its ID
+        markerObjects[response.marker_id] = markerObj;
+
+        // Add click event to show popup when marker is selected
+        markerObj.on('click', function () {
+            markerObj.openPopup();
+        });
+    }).fail(function () {
+        alert("Failed to add marker. Please try again.");
+    });
+});
+
+        function uploadPhoto(markerId) {
+            var fileInput = document.getElementById(`photo-input-${markerId}`);
+            var file = fileInput.files[0];
+
+            var formData = new FormData();
+            formData.append('image', file);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                url: `/upload_photo/${markerId}/`,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    alert('Photo uploaded successfully!');
+                }
+            });
+        }
+
+        function deleteMarker(markerId) {
+            if (confirm("Are you sure you want to delete this marker?")) {
+                $.post(`/delete_marker/${markerId}/`, {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }).done(function(response) {
+                    if (response.success) {
+                        var marker = markerObjects[markerId];
+                        if (marker) {
+                            map.removeLayer(marker);
+                            delete markerObjects[markerId];
+                        }
+                    } else {
+                        alert("Failed to delete marker.");
+                    }
+                });
+            }
+        }
+    </script>
+
+    <style>
+        .btn-same-size {
+            display: inline-block;
+            width: 150px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            padding: 0;
+        }
+
+        /* Add some spacing between the map and other content */
+        #map {
+            margin-top: 20px;
+        }
+
+        .content-top {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+
+{% endblock content %}
