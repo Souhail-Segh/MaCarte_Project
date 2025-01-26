@@ -1,0 +1,88 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+<div class="about-container">
+    <!-- Website Description Section -->
+    <div class="website-section">
+        <h2>MaCarte</h2>
+        <p>
+            Welcome to <b>MaCarte</b>, a platform designed to help you save and cherish your memories! 
+            With MaCarte, you can easily upload and organize memorable images associated with specific places. 
+            Whether it's a breathtaking view, a meaningful moment, or a photo souvenir, MaCarte makes it simple to keep your memories alive. 
+        </p>
+        <p>
+            Use the interactive map to mark locations, add photos, and revisit the places that mean the most to you. 
+            We hope you find MaCarte to be an enjoyable way to preserve and relive your cherished memories!
+        </p>
+    </div>
+</div>
+
+<hr>
+
+<!-- Developer Section -->
+<div class="developer-section">
+    <div class="developer-info">
+        <h2>SEGHROUCHNI Souhail</h2>
+        <p class="role">Web Developer & Creator of MaCarte</p>
+    </div>
+</div>
+
+<!-- Styles -->
+<style>
+    .about-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    .about-header h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .developer-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .developer-photo img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+
+    .developer-info h2 {
+        font-size: 1.8rem;
+        color: #555;
+    }
+
+    .developer-info .role {
+        font-size: 1rem;
+        color: #888;
+    }
+
+    .website-section {
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    .website-section h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .website-section p {
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.6;
+    }
+</style>
+{% endblock content %}

@@ -1,0 +1,101 @@
+{% extends "gallery/base.html" %}
+{% block content_menu %}
+<div class="col-md-3">
+    <div class="card" style="width: 18rem;">
+        <div class="card-header">
+          Categories
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <a href="{% url 'gallery-home' %}">All</a>
+            </li>
+           {% for category in categories %}
+            <li class="list-group-item">
+                <a href="{% url 'gallery-home' %}?category={{category.name}}">{{category.name}}</a>
+            </li>
+           {% endfor %} 
+            
+          <li class="list-group-item d-grid gap-2">
+            <a href="{%  url 'add' %}" class="btn btn-dark btn-sm m-1 w-100">Add photo</a>
+          </li>
+
+          <li class="list-group-item d-grid gap-2">
+            <form action="{% url 'clear-categories' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm m-1 w-100">Clear Categories</button>
+            </form>
+        </li>
+        </ul>
+      </div>
+</div>
+{% endblock content_menu %}
+
+{% block content_gal %}
+<div class="col-md-9">
+    
+    <div class="row">
+        {% if photos %}
+        {% for photo in photos %}
+        
+        
+        <div class="col-md-4">
+                <div class="card my-2">                            
+                    <img src="{{photo.image.url}}" class="card-img-top image-thumbail" alt="...">
+                    <div class="card-body">
+                    <small class="card-text">Category: {{photo.category.name}}</small>
+                    </div>
+                    <a href="{% url 'photo' photo.id %}" class="btn btn-outline-dark btn-sm m-1">View</a>
+                </div>
+        </div>
+        
+        {% endfor %}
+        {% else %}
+        <h3>No photos...</h3>
+        {% endif %}
+
+    </div>
+
+    {% if is_paginated %}
+<div class="row">
+    <footer class="footer-centered">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{page_obj.previous_page_number}}">Previous</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{num}}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{num}}">{{num}}</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if page_obj.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?page={{page_obj.next_page_number}}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{page_obj.paginator.num_pages}}">Last</a>
+        </footer>
+</div>
+</div>
+    
+
+{% endif %}       
+
+    <style>
+        .image-thumbail{
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .footer-centered {
+    display: flex; /* Use Flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-wrap: wrap; /* Allow wrapping of buttons if necessary */
+    margin: 0 auto; /* Ensure footer centers within its container */
+    padding: 10px; /* Add some padding for spacing */
+    background-color: #f8f9fa; /* Optional: light background for contrast */
+    border-top: 1px solid #ddd; /* Optional: a subtle border at the top */
+    width: 100%; /* Ensure it spans the full width of the row */
+}
+    </style>
+{% endblock content_gal %}

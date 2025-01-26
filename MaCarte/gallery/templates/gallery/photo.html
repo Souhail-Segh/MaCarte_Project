@@ -1,0 +1,53 @@
+{% extends "gallery/base.html" %}
+{% block content %}
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="col-md-8 d-flex align-items-center gap-2">
+                    <a href="{% url 'gallery-home' %}" class="btn btn-dark my-3">Back Home</a>
+                    <!-- Add a delete button -->
+                    {% if user.is_authenticated and user == photo.user %}
+                    <form action="{% url 'photo-delete' photo.id %}" method="POST" class="my-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete Photo</button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                <div class="card shadow">
+                    <div class="card-img-container">
+                        <img src="{{ photo.image.url}}" alt="Image">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            {{photo.description}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card {
+            max-width: 100%; /* Ensure the card doesn't exceed the viewport width */
+            margin: auto;
+        }
+        .card-img-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto; /* Let height adjust based on the image */
+            max-height: 90vh; /* Ensure the container doesn't exceed the viewport height */
+            padding-top: 1rem;
+        }
+        .card-img-container img {
+            max-width: 100%;
+            max-height: 90vh;
+            height: auto;
+            object-fit: contain; /* Ensures the image retains its aspect ratio */
+        }
+    </style>
+
+{% endblock content %}
